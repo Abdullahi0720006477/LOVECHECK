@@ -9,6 +9,17 @@ import { checkLove } from './api/loveCheck'
 
 type Step = 'input' | 'scan' | 'result'
 
+// Fun fact ticker
+const FACTS = [
+  '🔬 Powered by certified love science™',
+  '👀 34,821 cheaters exposed today',
+  '💍 12,004 soulmates found this week',
+  '🚩 Red flags caught: 99,999+',
+  '📵 Do NOT show this to your ex',
+  '🧬 Biometric thumb DNA activated',
+  '☕ The tea has been spilled',
+]
+
 const App: React.FC = () => {
   const [name1, setName1] = useState('')
   const [name2, setName2] = useState('')
@@ -17,23 +28,24 @@ const App: React.FC = () => {
   const [result, setResult] = useState<LoveResult | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [showHearts, setShowHearts] = useState(false)
+  const [factIdx] = useState(() => Math.floor(Math.random() * FACTS.length))
 
-  // Step 1 → Step 2: move to thumb scanner
   const handleContinue = () => {
     if (!name1.trim() || !name2.trim()) return
     setError(null)
     setStep('scan')
   }
 
-  // Step 2 done → call API
   const handleScanComplete = async () => {
     setLoading(true)
     try {
       const data = await checkLove(name1, name2)
       setResult(data)
       setStep('result')
-      setShowHearts(true)
-      setTimeout(() => setShowHearts(false), 5000)
+      if (data.percentage >= 65) {
+        setShowHearts(true)
+        setTimeout(() => setShowHearts(false), 5000)
+      }
     } catch {
       setError('Something broke — maybe the love was too powerful 💥')
       setStep('input')
@@ -42,7 +54,6 @@ const App: React.FC = () => {
     }
   }
 
-  // Reset everything
   const handleReset = () => {
     setName1('')
     setName2('')
@@ -53,54 +64,79 @@ const App: React.FC = () => {
   }
 
   return (
-    <div className="bg-surface text-on-surface font-body min-h-screen selection:bg-primary-container selection:text-on-primary-container overflow-x-hidden relative">
+    <div
+      className="font-body min-h-screen overflow-x-hidden relative"
+      style={{ background: 'linear-gradient(160deg, #0d0816 0%, #130820 40%, #0f0a1a 100%)', color: '#f1f5f9' }}
+    >
       <Header />
 
-      {/* Ambient Background */}
-      <div className="fixed inset-0 pointer-events-none z-0">
-        <div className="absolute -top-[10%] -left-[10%] w-[60%] h-[60%] rounded-full bg-primary-container opacity-10 blur-[120px]"></div>
-        <div className="absolute -bottom-[10%] -right-[10%] w-[60%] h-[60%] rounded-full bg-secondary-container opacity-10 blur-[120px]"></div>
+      {/* Ambient blobs */}
+      <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
+        <div className="absolute -top-32 -left-32 w-96 h-96 rounded-full opacity-20 blur-[130px]" style={{ background: '#ff4f8b' }} />
+        <div className="absolute -bottom-32 -right-32 w-96 h-96 rounded-full opacity-15 blur-[130px]" style={{ background: '#7c3aed' }} />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 rounded-full opacity-10 blur-[100px]" style={{ background: '#c084fc' }} />
       </div>
 
-      <main className="relative z-10 pt-32 pb-20 px-4 flex flex-col items-center">
+      <main className="relative z-10 pt-24 pb-24 px-4 flex flex-col items-center">
 
-        {/* Hero */}
-        <section className="text-center mb-16 max-w-2xl">
-          <div className="inline-flex items-center justify-center mb-6 text-6xl drop-shadow-[0_0_20px_rgba(255,79,139,0.5)] transition-transform duration-700 hover:scale-110">
-            💗
-          </div>
-          <h1 className="font-headline text-6xl md:text-8xl font-bold tracking-tighter text-gradient-primary mb-4 italic">
-            LoveCheck
-          </h1>
-          <p className="font-body text-on-surface-variant text-lg tracking-wide uppercase opacity-80">
-            Find out if it's love... or a <span className="text-error font-semibold italic">red flag</span> 🚩
-          </p>
-        </section>
-
-        {/* Step indicator dots */}
+        {/* ── HERO ── */}
         {step !== 'result' && (
-          <div className="flex items-center gap-3 mb-10">
+          <section className="text-center mb-10 max-w-sm w-full">
+            <div
+              className="text-6xl mb-4 inline-block"
+              style={{ filter: 'drop-shadow(0 0 30px rgba(255,79,139,0.6))', animation: 'pulse 2s infinite' }}
+            >
+              💗
+            </div>
+            <h1
+              className="font-headline font-black tracking-tighter italic mb-3"
+              style={{ fontSize: 'clamp(3rem,14vw,5.5rem)', background: 'linear-gradient(135deg, #ff4f8b 0%, #c084fc 50%, #ff4f8b 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}
+            >
+              LoveCheck
+            </h1>
+            <p className="text-sm uppercase tracking-widest opacity-60 mb-5">
+              Enter names → Scan thumb → Get the truth 💀
+            </p>
+
+            {/* Ticker */}
+            <div
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-xs font-bold uppercase tracking-wider"
+              style={{ background: 'rgba(255,79,139,0.1)', border: '1px solid rgba(255,79,139,0.2)', color: '#ff4f8b' }}
+            >
+              <span className="animate-pulse">📡</span>
+              {FACTS[factIdx]}
+            </div>
+          </section>
+        )}
+
+        {/* ── STEP INDICATORS ── */}
+        {step !== 'result' && (
+          <div className="flex items-center gap-2 mb-8">
             {(['input', 'scan'] as Step[]).map((s, i) => (
               <React.Fragment key={s}>
                 <div className="flex flex-col items-center gap-1">
                   <div
-                    className="w-7 h-7 rounded-full flex items-center justify-center font-label text-[10px] font-bold transition-all duration-500"
+                    className="w-8 h-8 rounded-full flex items-center justify-center font-bold text-xs transition-all duration-500"
                     style={{
-                      background: step === s ? 'var(--color-primary-container, #ff4f8b)' : 'transparent',
-                      border: `2px solid ${step === s ? 'transparent' : 'rgba(255,255,255,0.2)'}`,
-                      color: step === s ? '#fff' : 'rgba(255,255,255,0.4)',
+                      background: step === s
+                        ? 'linear-gradient(135deg,#ff4f8b,#c084fc)'
+                        : step === 'scan' && s === 'input'
+                        ? 'rgba(74,222,128,0.2)'
+                        : 'rgba(255,255,255,0.07)',
+                      border: `2px solid ${step === s ? 'transparent' : step === 'scan' && s === 'input' ? '#4ade80' : 'rgba(255,255,255,0.15)'}`,
+                      color: step === s ? '#fff' : step === 'scan' && s === 'input' ? '#4ade80' : 'rgba(255,255,255,0.35)',
                     }}
                   >
                     {step === 'scan' && s === 'input' ? '✓' : i + 1}
                   </div>
-                  <span className="font-label text-[8px] tracking-widest uppercase opacity-50">
-                    {s === 'input' ? 'Names' : 'Scan'}
+                  <span className="font-label text-[8px] tracking-widest uppercase opacity-40">
+                    {s === 'input' ? '✏️ Names' : '👆 Scan'}
                   </span>
                 </div>
                 {i < 1 && (
                   <div
-                    className="w-12 h-[1px] mb-4 transition-all duration-500"
-                    style={{ background: step === 'scan' ? '#ff4f8b' : 'rgba(255,255,255,0.15)' }}
+                    className="w-10 h-px mb-5 transition-all duration-700"
+                    style={{ background: step === 'scan' ? 'linear-gradient(90deg,#4ade80,#ff4f8b)' : 'rgba(255,255,255,0.12)' }}
                   />
                 )}
               </React.Fragment>
@@ -108,8 +144,9 @@ const App: React.FC = () => {
           </div>
         )}
 
-        {/* Main content area */}
-        <div className="w-full max-w-lg space-y-12">
+        {/* ── CONTENT ── */}
+        <div className="w-full max-w-sm space-y-4">
+
           {step === 'input' && (
             <InputCard
               name1={name1}
@@ -124,81 +161,78 @@ const App: React.FC = () => {
 
           {step === 'scan' && (
             <div className="space-y-4">
-              <ThumbScanner
-                name1={name1}
-                name2={name2}
-                onScanComplete={handleScanComplete}
-              />
-              {/* Loading overlay when API is being called after scan */}
+              <ThumbScanner name1={name1} name2={name2} onScanComplete={handleScanComplete} />
               {loading && (
-                <div className="surface-container rounded-xl p-6 border border-outline-variant/10 flex items-center justify-center gap-4">
-                  <span className="material-symbols-outlined text-primary-container text-3xl animate-spin">refresh</span>
-                  <p className="font-label text-[10px] tracking-widest text-primary-container uppercase">
-                    Calculating your love score...
-                  </p>
+                <div
+                  className="rounded-2xl p-5 flex items-center gap-4"
+                  style={{ background: 'rgba(255,79,139,0.08)', border: '1px solid rgba(255,79,139,0.2)' }}
+                >
+                  <span className="text-2xl animate-spin inline-block">🔄</span>
+                  <div>
+                    <p className="font-label text-[10px] tracking-widest uppercase font-bold" style={{ color: '#ff4f8b' }}>
+                      Consulting the love oracle...
+                    </p>
+                    <p className="font-label text-[9px] tracking-widest uppercase opacity-40 mt-0.5">
+                      Spilling the tea ☕
+                    </p>
+                  </div>
                 </div>
               )}
-              {/* Back button */}
               {!loading && (
                 <button
                   onClick={() => setStep('input')}
-                  className="font-label text-[10px] tracking-[0.3em] text-on-surface-variant uppercase hover:text-primary transition-colors flex items-center justify-center gap-2 mx-auto group"
+                  className="font-label text-[10px] tracking-widest uppercase opacity-50 hover:opacity-100 transition-opacity flex items-center justify-center gap-2 mx-auto"
+                  style={{ color: '#f1f5f9' }}
                 >
-                  <span className="material-symbols-outlined text-sm group-hover:-translate-x-1 transition-transform">
-                    arrow_back
-                  </span>
-                  Change Names
+                  ← Change Names
                 </button>
               )}
             </div>
           )}
 
           {step === 'result' && result && (
-            <ResultCard
-              result={result}
-              name1={name1}
-              name2={name2}
-              onReset={handleReset}
-            />
+            <>
+              {/* Result header */}
+              <div className="text-center mb-2">
+                <p className="font-label text-[10px] tracking-[0.3em] uppercase opacity-50">🔮 The Verdict Is In</p>
+              </div>
+              <ResultCard result={result} name1={name1} name2={name2} onReset={handleReset} />
+            </>
           )}
+
         </div>
 
-        {/* Bottom info section */}
+        {/* ── BOTTOM STATS — only on input step ── */}
         {step === 'input' && (
-          <section className="max-w-4xl w-full mt-32 grid grid-cols-1 md:grid-cols-3 gap-6 opacity-60">
-            <div className="md:col-span-2 surface-container rounded-xl p-8 flex flex-col justify-between border border-outline-variant/5">
-              <span className="font-label text-[10px] tracking-widest text-primary mb-8 uppercase italic">01 / The Algorithm</span>
-              <h4 className="font-headline text-4xl leading-tight mb-4">Deep Emotional <br/>Architecture.</h4>
-              <p className="font-body text-on-surface-variant/70 text-sm leading-loose">
-                Our proprietary LoveCheck engine analyzes phonetic resonance, historical romantic archetypes, and celestial alignment — verified by your unique biometric thumb scan.
-              </p>
-            </div>
-            <div className="surface-container-low rounded-xl p-8 flex flex-col items-center justify-center gap-6 border border-outline-variant/5 group">
-              <div className="w-20 h-20 rounded-full glass-panel flex items-center justify-center group-hover:scale-110 transition-transform">
-                <span className="text-4xl">👆</span>
+          <div className="w-full max-w-sm mt-16 grid grid-cols-3 gap-3">
+            {[
+              { emoji: '💍', number: '12K+', label: 'Soulmates Found' },
+              { emoji: '🚩', number: '99K+', label: 'Red Flags Caught' },
+              { emoji: '👀', number: '34K+', label: 'Cheaters Exposed' },
+            ].map((stat, i) => (
+              <div
+                key={i}
+                className="rounded-2xl p-4 text-center"
+                style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)' }}
+              >
+                <p className="text-2xl mb-1">{stat.emoji}</p>
+                <p className="font-headline text-lg font-black" style={{ color: '#ff4f8b' }}>{stat.number}</p>
+                <p className="font-label text-[8px] tracking-wider uppercase opacity-40 leading-tight mt-0.5">{stat.label}</p>
               </div>
-              <div className="text-center">
-                <p className="font-headline text-2xl italic tracking-tight">Thumb Certified</p>
-                <p className="font-label text-[9px] tracking-widest opacity-40 uppercase">Biometric Standard</p>
-              </div>
-            </div>
-          </section>
+            ))}
+          </div>
         )}
+
       </main>
 
       {/* Footer */}
-      <footer className="w-full py-20 px-6 relative z-10">
-        <div className="max-w-7xl mx-auto flex flex-col items-center gap-8 border-t border-outline-variant/10 pt-12">
-          <div className="flex flex-wrap justify-center gap-12">
-            <a href="#" className="font-label text-[10px] uppercase tracking-widest text-[#E8E0EC]/40 hover:text-[#E8E0EC] transition-all">Privacy</a>
-            <a href="#" className="font-label text-[10px] uppercase tracking-widest text-[#E8E0EC]/40 hover:text-[#E8E0EC] transition-all">Terms</a>
-            <a href="#" className="font-label text-[10px] uppercase tracking-widest text-[#E8E0EC]/40 hover:text-[#E8E0EC] transition-all">Our Method</a>
-          </div>
-          <p className="font-label text-[10px] uppercase tracking-widest text-[#E8E0EC]/20">© 2026 LOVECHECK. AN EDITORIAL EXPERIENCE.</p>
-        </div>
+      <footer className="relative z-10 pb-10 px-4 text-center">
+        <p className="font-label text-[9px] uppercase tracking-[0.3em] opacity-20">
+          © 2026 LOVECHECK · For entertainment only · Do not use as relationship advice 😂
+        </p>
       </footer>
 
-      <div className="fixed bottom-0 left-0 w-full h-[265px] bg-gradient-to-t from-surface to-transparent pointer-events-none z-0"></div>
+      <div className="fixed bottom-0 left-0 w-full h-48 bg-gradient-to-t from-[#0d0816] to-transparent pointer-events-none z-0" />
 
       {showHearts && <FloatingHearts />}
     </div>

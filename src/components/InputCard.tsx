@@ -3,120 +3,132 @@ import React from 'react'
 interface InputCardProps {
   name1: string
   name2: string
-  setName1: (name: string) => void
-  setName2: (name: string) => void
+  setName1: (v: string) => void
+  setName2: (v: string) => void
   onContinue: () => void
   loading: boolean
   error: string | null
 }
 
 export const InputCard: React.FC<InputCardProps> = ({
-  name1,
-  name2,
-  setName1,
-  setName2,
-  onContinue,
-  loading,
-  error,
+  name1, name2, setName1, setName2, onContinue, loading, error,
 }) => {
-  const isButtonDisabled = !name1.trim() || !name2.trim() || loading
+  const ready = name1.trim().length > 0 && name2.trim().length > 0
 
   const handleKey = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && !isButtonDisabled) onContinue()
+    if (e.key === 'Enter' && ready && !loading) onContinue()
   }
 
   return (
-    <div className="surface-container rounded-xl p-8 shadow-2xl relative overflow-hidden group border border-outline-variant/10">
-      <div className="absolute inset-0 bg-gradient-to-br from-primary-container/5 to-secondary-container/5 opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
+    <div
+      className="rounded-3xl p-7 relative overflow-hidden"
+      style={{ background: 'rgba(20,14,32,0.95)', border: '1px solid rgba(255,79,139,0.18)', boxShadow: '0 25px 80px rgba(255,79,139,0.1)' }}
+    >
+      {/* Subtle corner glow */}
+      <div className="absolute top-0 right-0 w-32 h-32 rounded-full blur-3xl pointer-events-none" style={{ background: 'rgba(192,132,252,0.1)' }} />
 
-      <div className="relative space-y-8">
-        {/* Step indicator */}
-        <div className="flex items-center gap-2 mb-2">
-          <span className="w-6 h-6 rounded-full bg-primary-container/20 border border-primary-container/40 flex items-center justify-center">
-            <span className="font-label text-[9px] text-primary-container font-bold">1</span>
-          </span>
-          <p className="font-label text-[10px] tracking-[0.2em] text-on-surface-variant uppercase">
-            Enter your names
-          </p>
-        </div>
+      <div className="relative space-y-7">
 
-        {/* Name 1 */}
+        {/* Name 1 — YOUR name */}
         <div className="space-y-2">
-          <label className="block font-label text-[10px] tracking-[0.2em] text-on-surface-variant uppercase ml-1">
-            Your Name
+          <label className="flex items-center gap-1.5 font-label text-[9px] tracking-[0.28em] uppercase font-bold" style={{ color: '#ff4f8b' }}>
+            <span>💝</span> Your Name
           </label>
-          <div className="relative flex items-center group/input">
-            <span className="material-symbols-outlined absolute left-0 text-primary-container/60 transition-colors group-focus-within/input:text-primary-container">
-              person
-            </span>
+          <div className="relative">
             <input
-              className="w-full bg-transparent border-0 border-b border-outline-variant/30 py-4 pl-10 focus:ring-0 focus:border-primary-container transition-all placeholder:text-on-surface-variant/20 font-headline text-2xl italic tracking-tight uppercase"
-              placeholder="THE LOVER"
+              className="w-full py-4 px-4 rounded-2xl font-headline text-xl italic uppercase tracking-tight outline-none transition-all duration-300"
+              style={{
+                background: 'rgba(255,255,255,0.04)',
+                border: `1.5px solid ${name1 ? 'rgba(255,79,139,0.5)' : 'rgba(255,255,255,0.08)'}`,
+                color: '#f1f5f9',
+                caretColor: '#ff4f8b',
+              }}
+              placeholder="Your name here..."
               type="text"
               value={name1}
-              onChange={(e) => setName1(e.target.value)}
+              onChange={e => setName1(e.target.value)}
               onKeyDown={handleKey}
               disabled={loading}
               autoFocus
             />
+            {name1 && (
+              <span className="absolute right-3 top-1/2 -translate-y-1/2 text-lg">✅</span>
+            )}
           </div>
         </div>
 
         {/* Divider */}
-        <div className="flex items-center justify-center gap-4 py-2">
-          <div className="h-[1px] flex-1 bg-gradient-to-r from-transparent to-outline-variant/30"></div>
-          <span className="text-primary-container text-xl animate-pulse">💗</span>
-          <div className="h-[1px] flex-1 bg-gradient-to-l from-transparent to-outline-variant/30"></div>
+        <div className="flex items-center gap-3">
+          <div className="flex-1 h-px" style={{ background: 'rgba(255,255,255,0.06)' }} />
+          <span className="text-2xl" style={{ filter: 'drop-shadow(0 0 8px rgba(255,79,139,0.6))', animation: 'pulse 1.5s infinite' }}>
+            💗
+          </span>
+          <div className="flex-1 h-px" style={{ background: 'rgba(255,255,255,0.06)' }} />
         </div>
 
-        {/* Name 2 */}
+        {/* Name 2 — WHO they love */}
         <div className="space-y-2">
-          <label className="block font-label text-[10px] tracking-[0.2em] text-on-surface-variant uppercase ml-1">
-            Who Do You Love?
+          <label className="flex items-center gap-1.5 font-label text-[9px] tracking-[0.28em] uppercase font-bold" style={{ color: '#c084fc' }}>
+            <span>😍</span> Who Do You Love?
           </label>
-          <div className="relative flex items-center group/input">
-            <span className="material-symbols-outlined absolute left-0 text-secondary-container/60 transition-colors group-focus-within/input:text-secondary-container">
-              favorite
-            </span>
+          <div className="relative">
             <input
-              className="w-full bg-transparent border-0 border-b border-outline-variant/30 py-4 pl-10 focus:ring-0 focus:border-secondary-container transition-all placeholder:text-on-surface-variant/20 font-headline text-2xl italic tracking-tight uppercase"
-              placeholder="THE BELOVED"
+              className="w-full py-4 px-4 rounded-2xl font-headline text-xl italic uppercase tracking-tight outline-none transition-all duration-300"
+              style={{
+                background: 'rgba(255,255,255,0.04)',
+                border: `1.5px solid ${name2 ? 'rgba(192,132,252,0.5)' : 'rgba(255,255,255,0.08)'}`,
+                color: '#f1f5f9',
+                caretColor: '#c084fc',
+              }}
+              placeholder="Their name here..."
               type="text"
               value={name2}
-              onChange={(e) => setName2(e.target.value)}
+              onChange={e => setName2(e.target.value)}
               onKeyDown={handleKey}
               disabled={loading}
             />
+            {name2 && (
+              <span className="absolute right-3 top-1/2 -translate-y-1/2 text-lg">✅</span>
+            )}
           </div>
         </div>
 
-        {/* Continue button */}
-        <button
-          onClick={onContinue}
-          disabled={isButtonDisabled}
-          className={`w-full py-6 mt-4 font-label font-bold uppercase tracking-[0.2em] rounded-xl relative overflow-hidden group shadow-[0_10px_40px_-10px_rgba(255,79,139,0.5)] active:scale-[0.98] transition-all
-            ${isButtonDisabled
-              ? 'bg-surface-variant text-on-surface-variant/40 cursor-not-allowed opacity-50'
-              : 'bg-primary-container text-on-primary'
-            }`}
-        >
-          {!isButtonDisabled && (
-            <div className="absolute inset-0 bg-gradient-to-r from-primary-container via-secondary-container to-primary-container translate-x-[-100%] group-hover:translate-x-[0%] transition-transform duration-700 ease-in-out"></div>
-          )}
-          <span className="relative z-10 flex items-center justify-center gap-2">
-            Continue to Thumb Scan 👆
-          </span>
-        </button>
-
-        {!loading && (name1.trim() === '' || name2.trim() === '') && (
-          <p className="text-center font-label text-[10px] tracking-widest text-[#ffb4ab] uppercase mt-4">
-            enter both names to continue
-          </p>
+        {/* Hint when both filled */}
+        {ready && (
+          <div
+            className="rounded-2xl p-3 text-center font-label text-[10px] tracking-widest uppercase font-bold animate-pulse"
+            style={{ background: 'rgba(255,79,139,0.08)', border: '1px solid rgba(255,79,139,0.2)', color: '#ff4f8b' }}
+          >
+            🔍 Ready to expose the truth...
+          </div>
         )}
 
+        {/* CTA Button */}
+        <button
+          onClick={onContinue}
+          disabled={!ready || loading}
+          className="w-full py-5 rounded-2xl font-label font-black uppercase tracking-[0.2em] text-sm transition-all duration-300 active:scale-95 relative overflow-hidden"
+          style={{
+            background: ready
+              ? 'linear-gradient(135deg, #ff4f8b 0%, #c084fc 50%, #ff4f8b 100%)'
+              : 'rgba(255,255,255,0.05)',
+            border: ready ? 'none' : '1px solid rgba(255,255,255,0.08)',
+            color: ready ? '#fff' : 'rgba(255,255,255,0.2)',
+            boxShadow: ready ? '0 10px 40px rgba(255,79,139,0.35)' : 'none',
+            cursor: ready ? 'pointer' : 'not-allowed',
+          }}
+        >
+          {ready ? '👆 Scan Your Thumb →' : 'Enter both names first 🙏'}
+        </button>
+
+        {/* Warning footer */}
+        <p className="text-center font-label text-[8px] tracking-widest uppercase opacity-30">
+          ⚠️ Results may reveal uncomfortable truths
+        </p>
+
         {error && (
-          <div className="bg-error-container text-on-error-container p-4 rounded-xl border border-error/20 animate-shake relative z-10">
-            <p className="text-[10px] font-label uppercase tracking-widest text-center">{error}</p>
+          <div className="rounded-2xl p-4 text-center" style={{ background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.25)' }}>
+            <p className="font-label text-[10px] tracking-widest uppercase" style={{ color: '#ef4444' }}>{error}</p>
           </div>
         )}
       </div>
