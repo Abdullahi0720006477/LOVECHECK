@@ -20,9 +20,9 @@ LoveCheck is a fun, dramatic, and hilariously honest love compatibility judge po
    ```bash
    npm install
    ```
-3. Create a `.env.local` file in the root directory:
+3. For local API development or deployment, configure the server-side environment variable:
    ```env
-   VITE_ANTHROPIC_API_KEY=your_anthropic_api_key_here
+   ANTHROPIC_API_KEY=your_anthropic_api_key_here
    ```
 4. Start the development server:
    ```bash
@@ -30,7 +30,7 @@ LoveCheck is a fun, dramatic, and hilariously honest love compatibility judge po
    ```
 
 ## Deployment
-This project is configured for easy deployment to **Vercel**. Simply connect your repository and add your `VITE_ANTHROPIC_API_KEY` to the environment variables in the Vercel dashboard.
+This project is configured for deployment to **Vercel**. Connect the repository and add `ANTHROPIC_API_KEY` in the Vercel environment settings. The key is used only by the server-side API route and is never included in the browser bundle.
 
 ---
 *© 2024 LOVECHECK. AN EDITORIAL EXPERIENCE.*
